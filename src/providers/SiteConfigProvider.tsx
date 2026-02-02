@@ -137,7 +137,7 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
         const fetchData = async () => {
             try {
                 // Fetch Config & Testimonials (Old Endpoint)
-                const configRes = await fetch("/api/config");
+                const configRes = await fetch("/api/config", { cache: "no-store" });
                 if (configRes.ok) {
                     const data = await configRes.json();
                     if (data.heroConfig) {
@@ -148,31 +148,31 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
                 }
 
                 // Fetch Gallery
-                const galleryRes = await fetch("/api/gallery");
+                const galleryRes = await fetch("/api/gallery", { cache: "no-store" });
                 if (galleryRes.ok) {
                     setGalleryItems(await galleryRes.json());
                 }
 
                 // Fetch Before/After
-                const beforeAfterRes = await fetch("/api/before-after");
+                const beforeAfterRes = await fetch("/api/before-after", { cache: "no-store" });
                 if (beforeAfterRes.ok) {
                     setBeforeAfterItems(await beforeAfterRes.json());
                 }
 
                 // Fetch Services
-                const servicesRes = await fetch("/api/services");
+                const servicesRes = await fetch("/api/services", { cache: "no-store" });
                 if (servicesRes.ok) {
                     setServices(await servicesRes.json());
                 }
 
                 // Fetch Specialist Config
-                const specialistRes = await fetch("/api/config/specialist");
+                const specialistRes = await fetch("/api/config/specialist", { cache: "no-store" });
                 if (specialistRes.ok) {
                     setSpecialistConfig(await specialistRes.json());
                 }
 
                 // Fetch Layout Config
-                const layoutRes = await fetch("/api/config/layout");
+                const layoutRes = await fetch("/api/config/layout", { cache: "no-store" });
                 if (layoutRes.ok) {
                     const data = await layoutRes.json();
                     setLayoutConfig(prev => ({
