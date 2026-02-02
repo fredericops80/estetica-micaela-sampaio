@@ -314,12 +314,15 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
             if (res.ok) {
                 const newItem = await res.json();
                 setServices(prev => [...prev, newItem]);
+                showDialog("Sucesso", "Serviço adicionado com sucesso!");
             } else {
                 const errText = await res.text();
                 console.error("Failed to add service:", res.status, errText);
+                showDialog("Erro", `Falha ao adicionar serviço: ${errText}`, true);
             }
         } catch (error) {
             console.error("Error adding service:", error);
+            showDialog("Erro", `Erro ao conectar com o servidor: ${error}`, true);
         }
     };
 
@@ -332,12 +335,15 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
             });
             if (res.ok) {
                 setServices(prev => prev.map(s => s.id === item.id ? item : s));
+                showDialog("Sucesso", "Serviço atualizado com sucesso!");
             } else {
                 const errText = await res.text();
                 console.error("Failed to update service:", res.status, errText);
+                showDialog("Erro", `Falha ao atualizar serviço: ${errText}`, true);
             }
         } catch (error) {
             console.error("Error updating service:", error);
+            showDialog("Erro", `Erro ao conectar com o servidor: ${error}`, true);
         }
     };
 
@@ -346,12 +352,15 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
             const res = await fetch(`/api/services?id=${id}`, { method: 'DELETE' });
             if (res.ok) {
                 setServices(prev => prev.filter(i => i.id !== id));
+                showDialog("Sucesso", "Serviço removido com sucesso!");
             } else {
                 const errText = await res.text();
                 console.error("Failed to remove service:", res.status, errText);
+                showDialog("Erro", `Falha ao remover serviço: ${errText}`, true);
             }
         } catch (error) {
             console.error("Error removing service:", error);
+            showDialog("Erro", `Erro ao conectar com o servidor: ${error}`, true);
         }
     };
 
