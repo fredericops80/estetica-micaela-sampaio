@@ -361,15 +361,21 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
 
     const saveLayoutConfig = async () => {
         try {
-            await fetch("/api/config/layout", {
+            const res = await fetch("/api/config/layout", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(layoutConfig)
             });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.details || data.error || "Failed to update");
+            }
+
             alert("Layout salvo com sucesso!");
         } catch (error) {
             console.error("Error saving layout config:", error);
-            alert("Erro ao salvar layout.");
+            alert(`Erro ao salvar layout: ${error instanceof Error ? error.message : String(error)}`);
         }
     };
 
