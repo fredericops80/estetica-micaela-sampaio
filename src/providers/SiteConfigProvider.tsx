@@ -121,6 +121,9 @@ const defaultLayoutConfig: LayoutConfig = {
 
 const SiteConfigContext = createContext<SiteConfigContextType | undefined>(undefined);
 
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
 export function SiteConfigProvider({ children }: { children: React.ReactNode }) {
     const [heroConfig, setHeroConfig] = useState<HeroConfig>(defaultHeroConfig);
     const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -131,6 +134,21 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
     const [specialistConfig, setSpecialistConfig] = useState<SpecialistConfig>(defaultSpecialistConfig);
     const [layoutConfig, setLayoutConfig] = useState<LayoutConfig>(defaultLayoutConfig);
     const [loading, setLoading] = useState(true);
+
+    const [dialogState, setDialogState] = useState<{ open: boolean; title: string; message: string; isError: boolean }>({
+        open: false,
+        title: "",
+        message: "",
+        isError: false
+    });
+
+    const showDialog = (title: string, message: string, isError: boolean = false) => {
+        setDialogState({ open: true, title, message, isError });
+    };
+
+    const closeDialog = () => {
+        setDialogState(prev => ({ ...prev, open: false }));
+    };
 
     // Load initial data from API
     useEffect(() => {
@@ -202,10 +220,10 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(heroConfig),
             });
-            alert("Configurações salvas com sucesso!");
+            showDialog("Sucesso", "Configurações salvas com sucesso!");
         } catch (error) {
             console.error("Error saving config:", error);
-            alert("Erro ao salvar configurações.");
+            showDialog("Erro", "Erro ao salvar configurações.", true);
         }
     };
 
@@ -348,10 +366,10 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(specialistConfig)
             });
-            alert("Configurações da especialista salvas com sucesso!");
+            showDialog("Sucesso", "Configurações da especialista salvas com sucesso!");
         } catch (error) {
             console.error("Error saving specialist config:", error);
-            alert("Erro ao salvar configurações.");
+            showDialog("Erro", "Erro ao salvar configurações.", true);
         }
     };
 
@@ -372,10 +390,10 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
                 throw new Error(data.details || data.error || "Failed to update");
             }
 
-            alert("Layout salvo com sucesso!");
+            showDialog("Sucesso", "Layout salvo com sucesso!");
         } catch (error) {
             console.error("Error saving layout config:", error);
-            alert(`Erro ao salvar layout: ${error instanceof Error ? error.message : String(error)}`);
+            showDialog("Erro", `Erro ao salvar layout: ${error instanceof Error ? error.message : String(error)}`, true);
         }
     };
 
@@ -391,6 +409,23 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
             loading
         }}>
             {children}
+            <Dialog open={dialogState.open} onOpenChange={(open) => !open && closeDialog()}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className={dialogState.isError ? "text-red-600" : "text-green-600"}>
+                            {dialogState.title}
+                        </DialogTitle>
+                        <DialogDescription className="pt-2">
+                            <div className="max-h-[300px] overflow-auto rounded-md bg-muted p-2 font-mono text-sm select-text">
+                                {dialogState.message}
+                            </div>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button onClick={closeDialog}>Fechar</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </SiteConfigContext.Provider>
     );
 }
