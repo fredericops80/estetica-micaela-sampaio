@@ -584,9 +584,19 @@ export default function AdminPage() {
                                         <Input
                                             placeholder="G-..."
                                             value={layoutConfig.googleAnalyticsId || ""}
-                                            onChange={(e) => updateLayoutConfig({ googleAnalyticsId: e.target.value })}
+                                            onChange={(e) => {
+                                                let val = e.target.value;
+                                                // If user pastes the full script, try to extract the ID
+                                                if (val.includes("<script") || val.includes("gtag")) {
+                                                    const match = val.match(/G-[A-Z0-9]+/);
+                                                    if (match) {
+                                                        val = match[0];
+                                                    }
+                                                }
+                                                updateLayoutConfig({ googleAnalyticsId: val })
+                                            }}
                                         />
-                                        <p className="text-xs text-muted-foreground">Cole apenas o ID ("Measurement ID"). O script será injetado automaticamente.</p>
+                                        <p className="text-xs text-muted-foreground">Cole o ID ("Measurement ID") ou o script completo fornecido pelo Google.</p>
                                     </div>
                                 </div>
 
