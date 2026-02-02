@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://u808953579_esteticams:%40F35c01BC%40@localhost:3306/u808953579_db_esteticams"
+  url      = "mysql://u808953579_esteticams:%40F35c01BC%40@72.60.86.49:3306/u808953579_db_esteticams"
 }
 
 
