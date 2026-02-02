@@ -20,8 +20,8 @@ export async function POST(request: Request) {
 
         // Try multiple possible upload directories
         const possibleDirs = [
-            path.join(process.cwd(), "public/uploads"),
             path.join(process.cwd(), "uploads"),
+            path.join(process.cwd(), "public/uploads"),
             "/tmp/uploads"
         ];
 
@@ -39,10 +39,9 @@ export async function POST(request: Request) {
                 // Determine the public URL based on directory
                 if (dir.includes("public/uploads")) {
                     fileUrl = `/uploads/${filename}`;
-                } else if (dir === "/tmp/uploads") {
-                    fileUrl = `/api/uploads/${filename}`;
                 } else {
-                    fileUrl = `/uploads/${filename}`;
+                    // Serve via API for root uploads or tmp uploads
+                    fileUrl = `/api/uploads/${filename}`;
                 }
                 break;
             } catch {
