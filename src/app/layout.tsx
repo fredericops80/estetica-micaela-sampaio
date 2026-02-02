@@ -30,12 +30,30 @@ export const metadata: Metadata = {
 };
 
 import { SiteConfigProvider } from "@/providers/SiteConfigProvider";
+import prisma from "@/lib/prisma";
 
-export default function RootLayout({
+async function getGoogleAnalyticsId() {
+  try {
+    const config = await prisma.siteConfig.findUnique({
+      where: { key: "layout_config" }
+    });
+    if (config?.value) {
+      const parsed = JSON.parse(config.value);
+      return parsed.googleAnalyticsId || process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "";
+    }
+  } catch (e) {
+    console.error("Failed to fetch GA ID", e);
+  }
+  return process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "";
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = await getGoogleAnalyticsId();
+
   return (
     <html lang="pt">
       <body className={cn(
@@ -46,7 +64,7 @@ export default function RootLayout({
         <SiteConfigProvider>
           {children}
         </SiteConfigProvider>
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || ""} />
+        <GoogleAnalytics gaId={gaId} />
       </body>
     </html>
   );

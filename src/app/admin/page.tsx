@@ -577,6 +577,19 @@ export default function AdminPage() {
                                     </div>
                                 </div>
 
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-medium">Google Analytics</h3>
+                                    <div className="max-w-md space-y-2">
+                                        <Label>ID de Acompanhamento (G-XXXXXXXXXX)</Label>
+                                        <Input
+                                            placeholder="G-..."
+                                            value={layoutConfig.googleAnalyticsId || ""}
+                                            onChange={(e) => updateLayoutConfig({ googleAnalyticsId: e.target.value })}
+                                        />
+                                        <p className="text-xs text-muted-foreground">Cole apenas o ID ("Measurement ID"). O script será injetado automaticamente.</p>
+                                    </div>
+                                </div>
+
                                 <Separator />
 
                                 {/* Section Ordering */}

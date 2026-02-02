@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export interface Testimonial {
     id: string;
@@ -47,6 +49,7 @@ export interface SpecialistConfig {
 
 export interface LayoutConfig {
     logoUrl: string;
+    googleAnalyticsId?: string;
     sectionOrder: { id: string; label: string; visible: boolean }[];
 }
 
@@ -108,6 +111,7 @@ const defaultSpecialistConfig: SpecialistConfig = {
 
 const defaultLayoutConfig: LayoutConfig = {
     logoUrl: "",
+    googleAnalyticsId: "",
     sectionOrder: [
         { id: "hero", label: "Hero Banner", visible: true },
         { id: "specialist", label: "A Especialista", visible: true },
@@ -120,9 +124,6 @@ const defaultLayoutConfig: LayoutConfig = {
 };
 
 const SiteConfigContext = createContext<SiteConfigContextType | undefined>(undefined);
-
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
 export function SiteConfigProvider({ children }: { children: React.ReactNode }) {
     const [heroConfig, setHeroConfig] = useState<HeroConfig>(defaultHeroConfig);
