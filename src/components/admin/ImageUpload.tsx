@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, X, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 interface ImageUploadProps {
     value?: string;
@@ -16,6 +17,7 @@ interface ImageUploadProps {
 
 export function ImageUpload({ value, onChange, label = "Imagem", className }: ImageUploadProps) {
     const [isUploading, setIsUploading] = useState(false);
+    const [errorState, setErrorState] = useState<{ open: boolean; message: string }>({ open: false, message: "" });
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -35,12 +37,19 @@ export function ImageUpload({ value, onChange, label = "Imagem", className }: Im
                 const data = await res.json();
                 onChange(data.url);
             } else {
-                console.error("Upload failed");
-                alert("Erro ao enviar imagem.");
+                const data = await res.json().catch(() => ({}));
+                console.error("Upload failed", data);
+                setErrorState({
+                    open: true,
+                    message: `Erro ao enviar imagem:\n${data.details || data.error || "Erro desconhecido"}\n${data.tried ? `Tentou pastas: ${JSON.stringify(data.tried)}` : ""}`
+                });
             }
         } catch (error) {
             console.error("Error uploading:", error);
-            alert("Erro ao enviar imagem.");
+            setErrorState({
+                open: true,
+                message: `Erro de conexão:\n${error instanceof Error ? error.message : String(error)}`
+            });
         } finally {
             setIsUploading(false);
         }
@@ -97,6 +106,22 @@ export function ImageUpload({ value, onChange, label = "Imagem", className }: Im
                     </div>
                 </div>
             )}
+
+            <Dialog open={errorState.open} onOpenChange={(open) => setErrorState(prev => ({ ...prev, open }))}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="text-red-600">Erro no Upload</DialogTitle>
+                        <DialogDescription className="pt-2">
+                            <div className="max-h-[300px] overflow-auto rounded-md bg-muted p-2 font-mono text-sm select-text whitespace-pre-wrap">
+                                {errorState.message}
+                            </div>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button onClick={() => setErrorState(prev => ({ ...prev, open: false }))}>Fechar</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
