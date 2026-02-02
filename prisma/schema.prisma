@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = "mysql://u808953579_esteticams:%40F35c01BC%40@localhost:3306/u808953579_db_esteticams"
 }
 
 
@@ -20,20 +20,20 @@ model HeroConfig {
   ctaText         String
   ctaColor        String
   ctaTextColor    String
-  backgroundImage String?
+  backgroundImage String? @db.Text
 }
 
 model Testimonial {
   id        String   @id @default(uuid())
   name      String
-  text      String
+  text      String   @db.Text
   rating    Int
   createdAt DateTime @default(now())
 }
 
 model GalleryItem {
   id        String   @id @default(uuid())
-  imageUrl  String
+  imageUrl  String   @db.Text
   altText   String?
   category  String   @default("general") // 'general' or 'details'
   order     Int      @default(0)
@@ -42,10 +42,10 @@ model GalleryItem {
 
 model BeforeAfterItem {
   id          String   @id @default(uuid())
-  beforeImage String
-  afterImage  String
+  beforeImage String   @db.Text
+  afterImage  String   @db.Text
   title       String
-  description String
+  description String   @db.Text
   createdAt   DateTime @default(now())
 }
 
@@ -53,7 +53,7 @@ model Service {
   id          String   @id @default(uuid())
   name        String
   category    String   // 'Facial' or 'Corporal'
-  description String
+  description String   @db.Text
   duration    String
   price       Float
   createdAt   DateTime @default(now())
@@ -62,5 +62,5 @@ model Service {
 model SiteConfig {
   id    String @id @default(uuid())
   key   String @unique
-  value String // JSON string
+  value String @db.LongText // JSON string
 }
