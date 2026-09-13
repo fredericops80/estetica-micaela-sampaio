@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Estética Micaela Sampaio — site
 
-## Getting Started
+Site institucional (one-page), landing page do **Club +Estética** e página de **agendamento online**.
+Next.js 16 (App Router, Turbopack) · React 19 · Tailwind 4 · Framer Motion · Lenis · GSAP.
 
-First, run the development server:
+## Correr
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build && npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Rotas
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Rota | O que é |
+|------|---------|
+| `/` · `/en` | Home (pt-PT por defeito, inglês em `/en`) |
+| `/club` · `/en/club` | Landing page do Club +Estética (tema escuro) |
+| `/agendar` · `/en/agendar` | Wizard de marcação (tratamento → dia/hora → dados → confirmação) |
+| `/api/bookr/*` | Route handlers que falam com o Bookr (ver abaixo) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O idioma é resolvido em [src/proxy.ts](src/proxy.ts): `/qualquer-coisa` é reescrito internamente para `/pt/...`; `/pt/...` redireciona para a raiz; visitantes com browser em inglês são enviados uma vez para `/en`.
 
-## Learn More
+## Onde vive o conteúdo (sem CMS)
 
-To learn more about Next.js, take a look at the following resources:
+- [src/data/clinic.ts](src/data/clinic.ts) — morada, telefone, horários, Instagram, promo do mês.
+- [src/data/services.ts](src/data/services.ts) — os 22 tratamentos (nomes, durações e preços iguais ao Bookr). Cada um tem `source: "bookr"` (texto da clínica) ou `"draft"` (texto redigido para o site, a validar).
+- [src/data/club.ts](src/data/club.ts) — planos, menu e FAQ do Club. **Sem preços** (não são públicos).
+- [src/data/testimonials.ts](src/data/testimonials.ts) — depoimentos reais e casos antes/depois.
+- [src/i18n/dictionaries/](src/i18n/dictionaries/) — todos os textos da interface em `pt.ts` e `en.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Imagens a substituir
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Ficheiro | Estado |
+|----------|--------|
+| `public/assets/micaela/portrait-1.jpg` (3:4) | **placeholder** — colocar a foto de estúdio da Micaela |
+| `public/assets/micaela/portrait-2.jpg` (3:4) | **placeholder** — colocar a segunda foto |
+| `public/assets/before-after/*.jpg` | imagens geradas por IA, a trocar por casos reais com consentimento |
+| `public/assets/skin/000..079.webp` | sequência do hero (gerada a partir de `docs/animacao-pele`, recortada para remover a marca de água) |
+| `public/assets/brand/` | logótipo (normal e claro) e monograma, com transparência |
 
-## Deploy on Vercel
+## Integração com o Bookr
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+A página de agendamento usa um adaptador em [src/lib/bookr/](src/lib/bookr/):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Sem credenciais → `mock.ts` (horários gerados dentro do horário de abertura; a marcação não é enviada). A página mostra um aviso de demonstração.
+- Com `BOOKR_API_URL` e `BOOKR_API_KEY` → `http.ts`. O Bookr não publica a API, por isso os caminhos e o mapeamento de campos estão concentrados nesse ficheiro para ajustar quando houver documentação.
+
+Os `bookrId` de cada serviço e o `BOOKR_PROVIDER_ID` da Micaela já estão preenchidos com os IDs reais da agenda.
+
+## Variáveis de ambiente
+
+Copiar `.env.example` para `.env` e preencher `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_META_PIXEL_ID` (analytics só carregam se existirem) e as credenciais do Bookr.
+
+## Deploy (VPS Hostinger + Dokploy)
+
+`next.config.ts` usa `output: "standalone"` e o [Dockerfile](Dockerfile) produz uma imagem mínima. No Dokploy: aplicação Docker apontada para este repositório, porta `3000`, variáveis de ambiente acima (as `NEXT_PUBLIC_*` também como build args).
